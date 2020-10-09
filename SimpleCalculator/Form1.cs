@@ -26,59 +26,97 @@ namespace SimpleCalculator
 
         private void btnCalc_Click(object sender, EventArgs e)
         {
-            // declare flag for errors
-            bool isInvalid = false;
+            // Declare output of try block for later use
+            Decimal result;
 
-            // get vars and store as Decimal
-            Decimal op1, op2;
+            //start error checking
             try
             {
+                // get vars and store as Decimal
+                Decimal op1, op2;
                 op1 = Convert.ToDecimal(tbOp1.Text);
                 op2 = Convert.ToDecimal(tbOp2.Text);
+
+                // do operation and get result
+                result = 0.0m;
+                switch (tbOper.Text)
+                {
+                    case "+":
+                        result = op1 + op2;
+                        break;
+
+                    case "-":
+                        result = op1 - op2;
+                        break;
+
+                    case "*":
+                        result = op1 * op2;
+                        break;
+
+                    case "/":
+                        result = op1 / op2;
+                        break;
+
+                    default:
+                        throw new InvalidOperationException(); // operator is null
+                }
             }
-            catch (Exception)
+            catch (FormatException)
             {
-                isInvalid = true;
-                op1 = 0.0m;
-                op2 = 0.0m;
+                MessageBox.Show(
+                   "FormatExcpetion: Non-numberic input for operator." + "\n",
+
+                   "FormatExcpetion Error");
+
+                tbResult.Text = "";
+                return;
             }
-
-
-            // do operation and get result
-            Decimal result = 0.0m;
-            switch (tbOper.Text)
+            catch (OverflowException)
             {
-                case "+":
-                    result = op1 + op2;
-                    break;
+                MessageBox.Show(
+                   "OverflowException: Numeric output too large." + "\n",
 
-                case "-":
-                    result = op1 - op2;
-                    break;
+                   "OverflowException Error");
 
-                case "*":
-                    result = op1 * op2;
-                    break;
+                tbResult.Text = "";
+                return;
+            }
+            catch (DivideByZeroException)
+            {
+                MessageBox.Show(
+                   "DivideByZeroException: Cannot divide by 0." + "\n",
 
-                case "/":
-                    result = op1 / op2;
-                    break;
+                   "DivideByZeroException Error");
 
-                default:
-                    isInvalid = true;
-                    break;
+                tbResult.Text = "";
+                return;
+            }
+            catch (InvalidOperationException)
+            {
+                MessageBox.Show(
+                   "InvalidOperationException: Operator missing or invalid. (Use +, -, *, /)" + "\n",
+
+                   "InvalidOperationException Error");
+
+                tbResult.Text = "";
+                return;
+            }
+            // Catch all others and show stack
+            catch (Exception ex)
+            {
+                MessageBox.Show(
+                    ex.ToString(),
+
+                    "Error");
+
+                tbResult.Text = "";
+                return;
             }
 
             // send result to form
-            if (isInvalid)
-            {
-                MessageBox.Show("Invalid input; please try again.");
-                tbResult.Text = "";
-            }
-            else 
-            {
-                tbResult.Text = Convert.ToString(result);
-            }
+            tbResult.Text = Convert.ToString(result);
+
+            return;
         }
     }
 }
